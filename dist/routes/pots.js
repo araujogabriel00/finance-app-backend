@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const pots_1 = require("../controllers/pots");
+const auth_1 = require("../middlewares/auth");
+const errorhandler_1 = require("../errorhandler");
+const potsRouter = (0, express_1.Router)();
+potsRouter.get("/", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(pots_1.getPots));
+potsRouter.post("/", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(pots_1.createPot));
+potsRouter.patch("/:id/add", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(pots_1.addFunds));
+potsRouter.patch("/:id/withdraw", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(pots_1.withdrawFunds));
+potsRouter.patch("/:id", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(pots_1.updatePot));
+potsRouter.delete("/:id", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(pots_1.deletePot));
+exports.default = potsRouter;

@@ -45,6 +45,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       "User does not exist",
       ErrorCodes.USER_DOES_NOT_EXIST
     );
+    console.log(user.password, password);
+    
   const passwordMatch = await bcrypt.compare(password, user.password);
 
   if (!passwordMatch)

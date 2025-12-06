@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const budgets_1 = require("../controllers/budgets");
+const errorhandler_1 = require("../errorhandler");
+const auth_1 = require("../middlewares/auth");
+const budgetRouter = (0, express_1.Router)();
+budgetRouter.get("/", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(budgets_1.getBudgets));
+budgetRouter.post("/", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(budgets_1.createBudgets));
+budgetRouter.patch("/:id", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(budgets_1.updateBudgets));
+budgetRouter.delete("/:id", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(budgets_1.deleteBudgets));
+exports.default = budgetRouter;

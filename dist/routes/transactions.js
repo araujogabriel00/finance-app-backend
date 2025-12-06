@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middlewares/auth");
+const errorhandler_1 = require("../errorhandler");
+const transactions_1 = require("../controllers/transactions");
+const transactionRouter = (0, express_1.Router)();
+transactionRouter.get("/", (0, errorhandler_1.errorHandler)(transactions_1.getTransactions));
+transactionRouter.post("/batch", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(transactions_1.createBatchTransactions));
+transactionRouter.get("/recurring", (0, errorhandler_1.errorHandler)(transactions_1.getRecurring));
+exports.default = transactionRouter;
