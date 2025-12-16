@@ -57,7 +57,7 @@ model Pot {
 
 model Transaction {
   id        Int      @id @default(autoincrement())
-  avatar    String
+  avatar    String?
   name      String
   category  String
   date      DateTime

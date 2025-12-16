@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { UnauthorizedException } from "../exceptions/unauthorized";
 import { ErrorCodes } from "../exceptions/root";
 import {
-  createBatchTransactionsSchema,
+  createTransactionsSchema,
   getRecurringSchema,
 } from "../schemas/transactions";
 import { UnprocessableEntity } from "../exceptions/unprocessable";
@@ -13,10 +13,24 @@ import { removeDuplicates } from "../utils/removeDuplicates";
 import { sortBills } from "../utils/sortRecurring";
 import { sortTransactions } from "../utils/sortTransactions";
 
+const createTransaction = async (req: Request, res: Response) => {
+  
+  createTransactionsSchema.parse(req.body);
+
+  const transaction = await prismaClient.transaction.create({
+    data: {
+      ...req.body,
+      date: new Date(req.body.date),
+      avatar: req.body.avatar || null,
+    }
+  });
+
+  res.status(200).json(transaction);
+};
+
 const getTransactions = async (
   req: Request,
   res: Response,
-  next: NextFunction
 ) => {
   const { search, category, sort, page } = req.query as any;
 
@@ -24,8 +38,10 @@ const getTransactions = async (
 
   if (search)
     transactions = transactions.filter((item) =>
-      item.name.toLowerCase().includes(search)
+      item.name.toLowerCase().includes(search.toLowerCase())
     );
+
+  //TODO: MELHORAR OS FILTROS
 
   transactions = filterCategory(transactions, category);
 
@@ -36,6 +52,8 @@ const getTransactions = async (
   transactions = paginateData(transactions, +page);
 
   res.status(200).json({ transactions, totalPages });
+
+  res.status(200).json({ transactions, totalPages: transactions.length });
 };
 
 const createBatchTransactions = async (
@@ -50,7 +68,7 @@ const createBatchTransactions = async (
       null
     );
 
-  req.body.forEach((obj) => createBatchTransactionsSchema.parse(obj));
+  req.body.forEach((obj) => createTransactionsSchema.parse(obj));
 
   const id: number = req.user.id;
   if (!(id === 2))
@@ -59,8 +77,14 @@ const createBatchTransactions = async (
       ErrorCodes.NOT_SAM
     );
 
+  const formattedData = req.body.map((item) => ({
+    ...item,
+    date: new Date(item.date),
+    avatar: item.avatar || null,
+  }));
+
   let transactions = await prismaClient.transaction.createMany({
-    data: req.body,
+    data: formattedData,
   });
 
   res.status(200).json(transactions);
@@ -82,7 +106,6 @@ const getRecurring = async (
   });
 
   /* Remove duplicates */
-
   recurring = removeDuplicates(recurring, "name");
 
   if (search)
@@ -95,4 +118,4 @@ const getRecurring = async (
   res.json(recurring);
 };
 
-export { getTransactions, createBatchTransactions, getRecurring };
+export { getTransactions, createBatchTransactions, getRecurring, createTransaction };

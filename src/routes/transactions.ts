@@ -5,11 +5,13 @@ import {
   getTransactions,
   createBatchTransactions,
   getRecurring,
+  createTransaction,
 } from "../controllers/transactions";
 
 const transactionRouter = Router();
 
 transactionRouter.get("/", errorHandler(getTransactions));
+transactionRouter.post("/", [authMiddleware], errorHandler(createTransaction));
 transactionRouter.post(
   "/batch",
   [authMiddleware],

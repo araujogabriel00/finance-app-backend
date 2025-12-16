@@ -6,6 +6,7 @@ const errorhandler_1 = require("../errorhandler");
 const transactions_1 = require("../controllers/transactions");
 const transactionRouter = (0, express_1.Router)();
 transactionRouter.get("/", (0, errorhandler_1.errorHandler)(transactions_1.getTransactions));
+transactionRouter.post("/", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(transactions_1.createTransaction));
 transactionRouter.post("/batch", [auth_1.authMiddleware], (0, errorhandler_1.errorHandler)(transactions_1.createBatchTransactions));
 transactionRouter.get("/recurring", (0, errorhandler_1.errorHandler)(transactions_1.getRecurring));
 exports.default = transactionRouter;
